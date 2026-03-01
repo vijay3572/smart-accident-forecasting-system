@@ -91,16 +91,17 @@ WSGI_APPLICATION = 'Roadrisk.wsgi.application'
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
-    # Render / Production
     DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
+        "default": dj_database_url.parse(
+            DATABASE_URL,
             conn_max_age=600,
             ssl_require=True
         )
     }
+
+    # ✅ Force sslmode=require for psycopg2
+    DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
 else:
-    # Local development
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
