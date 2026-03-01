@@ -1,0 +1,201 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Search Location - Roadrisk{% endblock %}
+{% block content %}
+
+<!-- BACKGROUND VIDEO -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="{% static 'videos/search.mp4' %}" type="video/mp4">
+</video>
+
+<style>
+/* Background Video */
+#bg-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.85;
+}
+body { background: transparent; }
+
+/* Search Map */
+#map {
+  width: 100%;
+  height: 350px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background: #d7d7d7;
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.result-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+  margin-bottom: 20px;
+  padding: 8px;
+}
+
+.result-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.bottom-row {
+  display: flex;
+  gap: 10px;
+}
+
+.result-text {
+  width: 60%;
+  font-size: 13px;
+}
+
+.result-text p {
+  margin: 3px 0;
+}
+
+.result-map {
+  width: 40%;
+  height: 150px;
+  border-radius: 10px;
+  background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .bottom-row { flex-direction: column; }
+  .result-text, .result-map { width: 100%; }
+}
+</style>
+
+<!-- SEARCH FORM -->
+<div class="row justify-content-center mt-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="text-center mb-3">Search Accident Location</h4>
+        <form id="searchForm" method="GET">
+          <div class="mb-3">
+            <input type="text" name="query" id="searchInput" class="form-control" placeholder="Enter location..." required>
+          </div>
+          <div id="map"></div>
+          <input type="hidden" id="id_latitude" name="latitude">
+          <input type="hidden" id="id_longitude" name="longitude">
+          <button class="btn btn-primary w-100" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+var map = L.map('map').setView([13.0827, 80.2707], 12);
+var marker = null;
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map data © OpenStreetMap' }).addTo(map);
+setTimeout(() => map.invalidateSize(), 200);
+
+function setMarker(lat,lng){
+  document.getElementById("id_latitude").value = lat;
+  document.getElementById("id_longitude").value = lng;
+  if(marker) map.removeLayer(marker);
+  marker = L.marker([lat,lng]).addTo(map);
+  map.setView([lat,lng],15);
+  setTimeout(()=>map.invalidateSize(),200);
+}
+
+map.on("click", function(e){ setMarker(e.latlng.lat,e.latlng.lng); });
+
+async function searchLocation(query){
+  if(!query) return;
+  const url=`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+  const response=await fetch(url);
+  const data=await response.json();
+  if(data.length>0){ setMarker(parseFloat(data[0].lat),parseFloat(data[0].lon)); }
+}
+
+document.getElementById("searchForm").addEventListener("submit", function(){
+  const q=document.getElementById("searchInput").value.trim();
+  searchLocation(q);
+});
+</script>
+
+<!-- RESULTS -->
+<div class="row mt-4">
+{% if query %}
+<h5 class="text-center">Results for: <b>"{{ query }}"</b></h5>
+<hr>
+{% if results %}
+  {% for item in results %}
+  <div class="col-md-6 col-lg-4">
+    <div class="result-card">
+
+      <!-- Image Top -->
+      <div class="result-image-wrapper">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" class="result-image">
+        {% else %}
+          <img src="{% static 'images/no-image.jpg' %}" class="result-image">
+        {% endif %}
+      </div>
+
+      <!-- Bottom row: Text + Map -->
+      <div class="bottom-row">
+        <div class="result-text">
+          <p><strong>Name:</strong> {{ item.name }}</p>
+          <p><strong>Mobile:</strong> {{ item.mobile_number }}</p>
+          <p><strong>Vehicle:</strong> {{ item.vehicle_number }} ({{ item.vehicle_type }})</p>
+          <p><strong>Location:</strong> {{ item.location }}</p>
+          <p><strong>Notes:</strong> {{ item.notes|default:"No notes" }}</p>
+        </div>
+        <div class="result-map" id="map_{{ forloop.counter }}"></div>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="no-result">No results found for "{{ query }}"</div>
+{% endif %}
+{% endif %}
+</div>
+
+<!-- MINI MAP JS -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+{% if results %}
+  {% for item in results %}
+    (function(){
+      const mapId="map_{{ forloop.counter }}";
+      const lat={{ item.latitude|default:"null" }};
+      const lng={{ item.longitude|default:"null" }};
+      if(lat && lng){
+        var resultMap=L.map(mapId).setView([lat,lng],15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution: 'Map data © OpenStreetMap' }).addTo(resultMap);
+        L.marker([lat,lng]).addTo(resultMap);
+        setTimeout(()=>resultMap.invalidateSize(),300);
+      }
+    })();
+  {% endfor %}
+{% endif %}
+});
+</script>
+
+{% endblock %}

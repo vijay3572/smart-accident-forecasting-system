@@ -1,0 +1,167 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Sign up - Roadrisk{% endblock %}
+{% block content %}
+
+<style>
+/* REMOVE OLD BACKGROUND */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: "Poppins", sans-serif;
+}
+
+/* VIDEO BACKGROUND */
+.video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    filter: brightness(90%) blur(1px);
+}
+
+/* DARK OVERLAY */
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    z-index: -1;
+}
+
+/* SMALLER SIGNUP CONTAINER */
+.signup-wrapper {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50px;
+}
+
+/* SMALL GLASS CARD */
+.glass-card {
+    width: 100%;
+    max-width: 350px;   /* reduced like login */
+    padding: 20px;       /* smaller padding */
+    border-radius: 18px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(0,255,255,0.3);
+    animation: popUp 0.8s ease-out both;
+    color: white;
+}
+
+/* Heading */
+.glass-card h4 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #00eaff;
+}
+
+/* INPUTS (smaller width) */
+.glass-card input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 14px;
+}
+
+.glass-card label {
+    font-size: 13px;
+    color: #b6f7ff;
+}
+
+.btn-primary {
+    background: #00eaff;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: #00bcd4;
+    transform: translateY(-3px);
+}
+
+/* ANIMATION */
+@keyframes popUp {
+    0% { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop class="video-bg">
+    <source src="{% static 'videos/carrace.mp4' %}" type="video/mp4">
+</video>
+
+<!-- DARK OVERLAY -->
+<div class="video-overlay"></div>
+
+<!-- SIGNUP CONTENT -->
+<div class="signup-wrapper">
+    <div class="glass-card">
+        <h4>Create an account</h4>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+
+            <div class="row">
+                <div class="col mb-3">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                </div>
+                <div class="col mb-3">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Sign up</button>
+        </form>
+
+        <div class="mt-3 text-center login-text">
+            Already have an account?
+            <a href="{% url 'accounts:login' %}">Log in</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+

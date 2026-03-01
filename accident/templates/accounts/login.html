@@ -1,0 +1,136 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Login - Roadrisk{% endblock %}
+{% block content %}
+
+
+<style>
+/* VIDEO BACKGROUND */
+.video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    filter: brightness(0.35);
+}
+
+/* ---- LOGIN CARD ---- */
+.glass-card {
+  margin-top: 7%;
+  background: rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 25px;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0px 0px 25px rgba(0,255,255,0.3);
+  animation: popUp 0.8s ease-out both;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes popUp {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,255,255,0.4) !important;
+  background: rgba(255,255,255,0.1) !important;
+  color: #0ff !important;
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+label {
+  color: #0ff;
+  font-weight: 600;
+}
+
+input:focus {
+  outline: none !important;
+  box-shadow: 0 0 12px #0ff;
+}
+
+/* ---- BUTTON ---- */
+.glow-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  background: #0ff;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 25px;
+  box-shadow: 0 0 15px #0ff;
+  transition: 0.25s;
+}
+
+.glow-btn:hover {
+  box-shadow: 0 0 25px #0ff;
+  transform: scale(1.05);
+}
+
+/* Heading */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0ff;
+  text-shadow: 0 0 15px #0ff;
+}
+
+.signup-text {
+  color: #fff;
+}
+.signup-text a {
+  color: #0ff;
+  font-weight: bold;
+  text-decoration: none;
+}
+</style>
+
+<!-- BACKGROUND VIDEO -->
+<video autoplay muted loop class="video-bg">
+<source src="/static/videos/carrace.mp4" type="video/mp4"></video>
+
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="glass-card">
+
+      <h2>⚡Login 🚕 </h2>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+          {{ form.username.label_tag }}
+          {{ form.username }}
+          {{ form.username.errors }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.password.label_tag }}
+          {{ form.password }}
+          {{ form.password.errors }}
+        </div>
+
+        <button type="submit" class="glow-btn">Login</button>
+      </form>
+
+      <div class="mt-3 text-center signup-text">
+        Don't have an account?  
+        <a href="{% url 'accounts:signup' %}">Sign up</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

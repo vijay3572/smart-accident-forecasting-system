@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact | Smart Accident Forecasting</title>
+
+<style>
+    body {
+        margin: 40px;   /* 🔥 Full page margin added */
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        color: #fff;
+        height: 100vh;
+    }
+
+    /* BACKGROUND VIDEO */
+    #bg-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        opacity: 0.65;
+    }
+
+    /* TOP RIGHT DASHBOARD BUTTON */
+    .dashboard-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ffd700;
+        color: #0a2647;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        transition: 0.3s;
+        z-index: 9999;
+    }
+
+    .dashboard-btn:hover {
+        background: #ffcc00;
+        transform: scale(1.05);
+    }
+
+    .contact-box {
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(10px);
+        padding: 40px 35px;
+        border-radius: 15px;
+        width: 400px;
+        margin: auto;
+        margin-top: 60px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h2 {
+        text-align: center;
+        color: #ffd700;
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        text-align: center;
+        color: #ffcc00;
+        margin-top: 25px;
+    }
+
+    form input, form textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+    }
+
+    form button {
+        width: 100%;
+        padding: 14px;
+        background: #ffd700;
+        color: #0a2647;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 20px;
+    }
+
+    form button:hover {
+        background: #ffcc00;
+    }
+
+    /* SUCCESS POPUP */
+    .success-popup {
+        background: #28a745;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        opacity: 0;
+        animation: fadeInOut 4s ease forwards;
+        z-index: 99999;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(-10px); }
+        15% { opacity: 1; transform: translateY(0); }
+        85% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* 🔥 SOCIAL LINKS CENTERED */
+    .social-links {
+        margin-top: 20px;
+        text-align: center; /* Center icons */
+    }
+
+    .social-links a {
+        font-size: 24px;
+        margin: 0 10px;
+        text-decoration: none;
+        color: #ffd700;
+        transition: 0.3s;
+    }
+
+    .social-links a:hover {
+        transform: scale(1.2);
+        color: #ffffff;
+    }
+
+</style>
+</head>
+<body>
+
+<video autoplay muted loop playsinline id="bg-video">
+    <source src="{% static 'videos/tel.mp4' %}" type="video/mp4">
+</video>
+
+<a href="/dashboard/" class="dashboard-btn">Go to Dashboard</a>
+
+{% if success %}
+<div id="successMsg" class="success-popup">
+    ✔ Message sent successfully!
+</div>
+{% endif %}
+
+<div class="contact-box">
+    <h2>Contact Us</h2>
+
+    <div class="contact-info">
+        <p>📞 Phone: +91 6381574367</p>
+        <p>📧 Email: vvijay22@gmail.com</p>
+        <p>📍 Address: Chennai, India</p>
+    </div>
+
+    <h3>Send us a message</h3>
+
+    <form method="POST" action="/contact/">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <input type="text" name="subject" placeholder="Subject">
+        <textarea name="message" placeholder="Your Message" rows="5"></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+
+    <div class="social-links">
+        <a href="#">🔗</a>
+        <a href="#">🐦</a>
+        <a href="https://www.instagram.com/invites/contact/?utm_source=ig_contact_invite&utm_medium=copy_link&utm_content=ddu3skt">📸</a>
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        var popup = document.getElementById("successMsg");
+        if (popup) popup.remove();
+    }, 4000);
+</script>
+
+</body>
+</html>
